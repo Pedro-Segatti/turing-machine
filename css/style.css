@@ -1,0 +1,49 @@
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+
+nav .brand-logo {
+  color: #EEEEEE;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.github-logo {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #EEEEEE;
+}
+
+.github-logo i {
+  font-size: 24px;
+}
+
+.github-logo i:hover {
+  color: #CCCCCC;
+}
+.light-grey {
+  background: #222831;
+}
+.word-input-sticky {
+  top: 130px;
+}
+
+.sticky-top {
+  top: 0;
+  position: sticky;
+  z-index: 999;
+}
+
+.input-field{
+  background-color: white;
+}
+
+.highlight-row {
+  background-color: rgb(87, 166, 161);
+}
