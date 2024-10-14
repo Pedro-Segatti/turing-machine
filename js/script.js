@@ -1,3 +1,4 @@
+// Adiciona a ação no botão de enter
 document.getElementById('sentences').addEventListener('keypress', function (event) {
     if (event.key === 'Enter') {
         event.preventDefault();
@@ -5,21 +6,21 @@ document.getElementById('sentences').addEventListener('keypress', function (even
     }
 });
 
-// Initial state of the Turing machine
 let currentState = 'q0';
 let steps = 0;
 let index = 0;
 
+// Apenas valida para não deixar digitar outras letras e números a não ser a e b
 function validateInput() {
     const sentenceInput = document.getElementById('sentences');
-    const validChars = /^[ab]*$/; // Permite apenas 'a' e 'b'
+    const validChars = /^[ab]*$/;
 
     if (!validChars.test(sentenceInput.value)) {
-        // Se a entrada contiver caracteres inválidos, remova-os
         sentenceInput.value = sentenceInput.value.replace(/[^ab]/g, '');
     }
 }
 
+// Invocada ao clicar em analisar
 function onClickAnalyseButton() {
     const sentenceInput = document.getElementById('sentences').value;
     if (!sentenceInput) {
@@ -28,19 +29,20 @@ function onClickAnalyseButton() {
 
     const tapeArray = ['•', ...sentenceInput, 'β'];
 
-    currentState = 'q0';
+    currentState = 'q0'; // inicia sempre em q0
     index = 0;
     steps = 0;
 
-    clearStepsTable();
-    clearResultMessage();
-    createTape(tapeArray); // Creates the tape visualization
-    analyzeSentence(tapeArray); // Starts the simulation
+    clearStepsTable(); // limpa a tabela de passos
+    clearResultMessage(); // limpa a mensagem de resultado
+    createTape(tapeArray); // cria a tabela da fita
+    analyzeSentence(tapeArray); // analisa a sentença em si
 }
 
+// Cria a tabela de controle de fita
 function createTape() {
     const tapeContainer = document.getElementById('tape-container');
-    tapeContainer.innerHTML = ''; // Clears the tape container
+    tapeContainer.innerHTML = '';
 
     const table = document.createElement('table');
     table.className = 'highlight centered';
@@ -49,9 +51,8 @@ function createTape() {
     tapeContainer.appendChild(table);
 }
 
+// Adiciona a linha que corresponde ao estado da fita
 function addRowOnTape(tapeArray, index) {
-    console.log("idx", index);
-
     const tableBody = document.getElementById("tape-table");
     const newRow = document.createElement("tr");
 
@@ -61,7 +62,7 @@ function addRowOnTape(tapeArray, index) {
         cell.innerText = symbol;
         cell.classList.add("tape-cell");
         if (idx === index) {
-            cell.style.backgroundColor = "rgb(87, 166, 161)";
+            cell.style.backgroundColor = "rgb(87, 166, 161)"; // destaca a localização do cabeçote da fita
         }
         newRow.appendChild(cell);
     });
@@ -69,6 +70,7 @@ function addRowOnTape(tapeArray, index) {
     tableBody.appendChild(newRow);
 }
 
+// Marca o estado que está sendo lido da tabela, destacando em verde
 function highlightStepStateOnTable(tapeArray) {
     const tableCells = document.querySelectorAll("td");
     tableCells.forEach(cell => {
@@ -95,10 +97,9 @@ function highlightStepStateOnTable(tapeArray) {
             rowIndex = 4;
             break;
         default:
-            return; // Estado inválido
+            return;
     }
 
-    // Obter o índice da coluna correspondente ao símbolo atual
     let columnIndex;
     switch (tapeArray[index]) {
         case '•':
@@ -117,7 +118,7 @@ function highlightStepStateOnTable(tapeArray) {
             columnIndex = 5;
             break;
         default:
-            return; // Símbolo inválido
+            return;
     }
 
     const cell = document.getElementById(`${rowIndex}_${columnIndex}`);
@@ -126,6 +127,7 @@ function highlightStepStateOnTable(tapeArray) {
     }
 }
 
+// Adiciona a linha do passo em que estamos, simula o que fizemos no caderno
 function addRowOnStepTable(step, currentState, readSymbol, nextState, writtenSymbol, direction) {
     const stepsTableBody = document.getElementById("steps-table-body");
 
@@ -141,6 +143,7 @@ function addRowOnStepTable(step, currentState, readSymbol, nextState, writtenSym
     row.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+// Limpa a tabela de passos
 function clearStepsTable() {
     const stepsTableBody = document.getElementById("steps-table-body");
 
@@ -149,6 +152,7 @@ function clearStepsTable() {
     }
 }
 
+// Mostra o resultado do processamento da sentença
 function displayResultMessage(isAccepted, steps) {
     const resultMessage = document.getElementById("result-message");
 
@@ -163,12 +167,14 @@ function displayResultMessage(isAccepted, steps) {
     resultMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+// Limpa o resultado do processamento
 function clearResultMessage() {
     const resultMessage = document.getElementById("result-message");
 
     resultMessage.textContent = "";
 }
 
+// Analisa as sentenças de fato
 async function analyzeSentence(tapeArray) {
     let backState;
     while (currentState !== 'q4' && currentState !== null) {
@@ -197,7 +203,7 @@ async function analyzeSentence(tapeArray) {
                 } else if (currentSymbol === 'X') {
                     [nextState, writtenSymbol, direction] = ['q1', 'X', 'D'];
                 } else {
-                    nextState = null; // Invalid sentence
+                    nextState = null;
                 }
                 break;
             case 'q2':
@@ -219,7 +225,7 @@ async function analyzeSentence(tapeArray) {
                 } else if (currentSymbol === 'X') {
                     [nextState, writtenSymbol, direction] = ['q0', 'X', 'D'];
                 } else {
-                    nextState = null; // Invalid sentence
+                    nextState = null;
                 }
                 break;
             default:
@@ -252,6 +258,6 @@ async function analyzeSentence(tapeArray) {
             return;
         }
 
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Adds 1 second delay
+        await new Promise(resolve => setTimeout(resolve, 1000)); // delay de 1s para a visualização passo a passo
     }
 }
