@@ -1,127 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
-        <title>Máquina de Turing</title>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <title>Máquina de Turing</title>
 
-        <!-- CSS  -->
-        <link rel="icon" href="assets/favicon.png" type="image/x-icon" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
-        <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
-    </head>
+    <!-- CSS  -->
+    <link rel="icon" href="assets/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+</head>
 
-    <body>
-        <header>
-            <nav class="light-grey lighten-1" role="navigation">
-                <div class="nav-wrapper">
-                    <a id="reloadLink" href="javascript:void(0);" class="brand-logo">Máquina de Turing</a>
-                    <a href="https://github.com/Pedro-Segatti/turing-machine" class="github-logo"
-                        title="https://github.com/Pedro-Segatti/turing-machine" target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
-                </div>
-            </nav>
-            <div class="container">
-                <h4 class="center-align">L = {(a|b)* e a quantidade de a’s é igual a quantidade de b’s}</h4>
+<body>
+    <header>
+        <nav class="light-grey lighten-1" role="navigation">
+            <div class="nav-wrapper">
+                <a id="reloadLink" href="javascript:void(0);" class="brand-logo">Máquina de Turing</a>
+                <a href="https://github.com/Pedro-Segatti/turing-machine" class="github-logo"
+                    title="https://github.com/Pedro-Segatti/turing-machine" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
             </div>
-        </header>
-
+        </nav>
         <div class="container">
+            <h4 class="center-align">L = {(a|b)* e a quantidade de a’s é igual a quantidade de b’s}</h4>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s10">
+                            <input type="text" id="sentences" placeholder="Digite a ou b" autofocus class="validate"
+                                required oninput="validateInput()" />
+                            <label for="sentences">Sentença</label>
+                        </div>
+                        <div class="input-field col s2">
+                            <button id="analyze-button" class="btn waves-effect waves-light btn-large" type="button"
+                                onclick="onClickAnalyseButton()">Analisar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <div class="section">
-                <div class="section">
+                <table class="highlight centered">
+                    <thead>
+                        <tr>
+                            <th id="header_0">δ</th>
+                            <th id="header_1">•</th>
+                            <th id="header_2">a</th>
+                            <th id="header_3">b</th>
+                            <th id="header_4">X</th>
+                            <th id="header_5">β</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="0_0">q0</td>
+                            <td id="0_1">(q0, •, D)</td>
+                            <td id="0_2">(q2, X, D)</td>
+                            <td id="0_3">(q1, X, D)</td>
+                            <td id="0_4">(q0, X, D)</td>
+                            <td id="0_5">(q4, β, D)</td>
+                        </tr>
+                        <tr>
+                            <td id="1_0">q1</td>
+                            <td id="1_1">-</td>
+                            <td id="1_2">(q3, X, E)</td>
+                            <td id="1_3">(q1, b, D)</td>
+                            <td id="1_4">(q1, X, D)</td>
+                            <td id="1_5">-</td>
+                        </tr>
+                        <tr>
+                            <td id="2_0">q2</td>
+                            <td id="2_1">-</td>
+                            <td id="2_2">(q2, a, D)</td>
+                            <td id="2_3">(q3, X, E)</td>
+                            <td id="2_4">(q2, X, D)</td>
+                            <td id="2_5">-</td>
+                        </tr>
+                        <tr>
+                            <td id="3_0">q3</td>
+                            <td id="3_1">-</td>
+                            <td id="3_2">(q3, a, E)</td>
+                            <td id="3_3">(q3, b, E)</td>
+                            <td id="3_4">(q0, X, D)</td>
+                            <td id="3_5">-</td>
+                        </tr>
+                        <tr>
+                            <td id="4_0">*q4</td>
+                            <td id="4_1">-</td>
+                            <td id="4_2">-</td>
+                            <td id="4_3">-</td>
+                            <td id="4_4">-</td>
+                            <td id="4_5">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <br />
+            <br />
+
+            <div class="row">
+                <div id="tape-container" class="col s12 m6"></div>
+
+                <div id="steps-container" class="col s12 m6">
                     <table class="highlight centered">
-                        <thead>
-                            <tr>
-                                <th>δ</th>
-                                <th>•</th>
-                                <th>a</th>
-                                <th>b</th>
-                                <th>X</th>
-                                <th>β</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>&rarr;q0</td>
-                                <td>(q0, •, D)</td>
-                                <td>(q2, X, D)</td>
-                                <td>(q1, X, D)</td>
-                                <td>(q0, X, D)</td>
-                                <td>(q4, β, D)</td>
-                            </tr>
-                            <tr>
-                                <td>q1</td>
-                                <td>-</td>
-                                <td>(q3, X, E)</td>
-                                <td>(q1, b, D)</td>
-                                <td>(q1, X, D)</td>
-                                <td>-</td>
-                            </tr>
-                            <tr>
-                                <td>q2</td>
-                                <td>-</td>
-                                <td>(q2, a, D)</td>
-                                <td>(q3, X, E)</td>
-                                <td>(q2, X, D)</td>
-                                <td>-</td>
-                            </tr>
-                            <tr>
-                                <td>q3</td>
-                                <td>-</td>
-                                <td>(q3, a, E)</td>
-                                <td>(q3, b, E)</td>
-                                <td>(q0, X, D)</td>
-                                <td>-</td>
-                            </tr>
-                            <tr>
-                                <td>*q4</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="steps-table-body"></tbody>
                     </table>
                 </div>
+            </div>
 
-                <br />
-                <br />
-
-                <div id="fita-container" class="container">
-                    <!-- A tabela da fita será criada e atualizada aqui -->
-                </div>
-
-                <br />
-                <br />
-
-                <div class="row">
-                    <form class="col s12">
-                        <div class="row">
-                            <div class="input-field col s10">
-                                <input id="sentences" type="text" autofocus class="validate">
-                                <label for="sentences">Sentença</label>
-                            </div>
-                            <div class="input-field col s2">
-                                <button id="add-word-button" class="btn waves-effect waves-light btn-large" type="button"
-                                    onclick="addSentence()">Analisar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+            <div class="row">
+                <div class="container">
+                    <h4 id="result-message" class="center-align"></h4>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!--  Scripts-->
-        <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script src="js/materialize.js"></script>
-        <script src="js/init.js"></script>
-        <script src="js/script.js"></script>
-    </body>
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+    <script src="js/script.js"></script>
+</body>
 
 </html>

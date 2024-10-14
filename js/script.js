@@ -1,134 +1,257 @@
-// Estado inicial da máquina de Turing
-let estadoAtual = 'q0';
-let passos = 0;
+document.getElementById('sentences').addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('analyze-button').click();
+    }
+});
+
+// Initial state of the Turing machine
+let currentState = 'q0';
+let steps = 0;
 let index = 0;
 
-// Função que será chamada ao clicar em "Analisar"
-function addSentence() {
-    const sentenceInput = document.getElementById('sentences').value;
-    const sentenceArray = [...sentenceInput, 'β']; // Adicionando 'β' ao final da sentença
-    estadoAtual = 'q0';  // Iniciando do estado q0
-    index = 0;
-    passos = 0;
+function validateInput() {
+    const sentenceInput = document.getElementById('sentences');
+    const validChars = /^[ab]*$/; // Permite apenas 'a' e 'b'
 
-    criarFita(sentenceArray); // Cria a visualização da fita
-    analisarSentenca(sentenceArray); // Inicia a simulação
-}
-
-// Função para criar a tabela da fita
-function criarFita(sentenceArray) {
-    const fitaContainer = document.getElementById('fita-container');
-    fitaContainer.innerHTML = ''; // Limpa o container da fita
-
-    const table = document.createElement('table');
-    table.className = 'highlight centered';
-
-    const row = document.createElement('tr');
-
-    sentenceArray.forEach((simbolo, idx) => {
-        const cell = document.createElement('td');
-        cell.innerText = simbolo;
-        cell.id = `fita-cell-${idx}`;
-        row.appendChild(cell);
-    });
-
-    table.appendChild(row);
-    fitaContainer.appendChild(table);
-}
-
-// Função para atualizar a célula da fita e destacar o cabeçote
-function atualizarFita(sentenceArray) {
-    sentenceArray.forEach((simbolo, idx) => {
-        const cell = document.getElementById(`fita-cell-${idx}`);
-        if (cell) {
-            cell.innerText = simbolo;
-            cell.classList.remove('highlight-head'); // Remove o destaque de todas as células
-        }
-    });
-
-    // Destaca a célula onde o cabeçote está posicionado
-    const currentCell = document.getElementById(`fita-cell-${index}`);
-    if (currentCell) {
-        currentCell.classList.add('highlight-head'); // Adiciona destaque ao cabeçote
+    if (!validChars.test(sentenceInput.value)) {
+        // Se a entrada contiver caracteres inválidos, remova-os
+        sentenceInput.value = sentenceInput.value.replace(/[^ab]/g, '');
     }
 }
 
-// Função principal que simula a máquina de Turing com delay
-async function analisarSentenca(sentenceArray) {
-    while (estadoAtual !== 'q4' && estadoAtual !== null) {
-        let simboloAtual = sentenceArray[index];
-        let proximoEstado, simboloEscrito, direcao, coluna;
+function onClickAnalyseButton() {
+    const sentenceInput = document.getElementById('sentences').value;
+    if (!sentenceInput) {
+        return;
+    }
 
-        switch (estadoAtual) {
+    const tapeArray = ['•', ...sentenceInput, 'β'];
+
+    currentState = 'q0';
+    index = 0;
+    steps = 0;
+
+    clearStepsTable();
+    clearResultMessage();
+    createTape(tapeArray); // Creates the tape visualization
+    analyzeSentence(tapeArray); // Starts the simulation
+}
+
+function createTape() {
+    const tapeContainer = document.getElementById('tape-container');
+    tapeContainer.innerHTML = ''; // Clears the tape container
+
+    const table = document.createElement('table');
+    table.className = 'highlight centered';
+    table.id = 'tape-table';
+
+    tapeContainer.appendChild(table);
+}
+
+function addRowOnTape(tapeArray, index) {
+    console.log("idx", index);
+
+    const tableBody = document.getElementById("tape-table");
+    const newRow = document.createElement("tr");
+
+    tapeArray.forEach((symbol, idx) => {
+        const cell = document.createElement("td");
+        cell.id = `tape-cell-${idx}`;
+        cell.innerText = symbol;
+        cell.classList.add("tape-cell");
+        if (idx === index) {
+            cell.style.backgroundColor = "rgb(87, 166, 161)";
+        }
+        newRow.appendChild(cell);
+    });
+
+    tableBody.appendChild(newRow);
+}
+
+function highlightStepStateOnTable(tapeArray) {
+    const tableCells = document.querySelectorAll("td");
+    tableCells.forEach(cell => {
+        if (cell.style.backgroundColor === "rgb(87, 166, 161)") {
+            cell.style.backgroundColor = "";
+        }
+    });
+
+    let rowIndex;
+    switch (currentState) {
+        case 'q0':
+            rowIndex = 0;
+            break;
+        case 'q1':
+            rowIndex = 1;
+            break;
+        case 'q2':
+            rowIndex = 2;
+            break;
+        case 'q3':
+            rowIndex = 3;
+            break;
+        case 'q4':
+            rowIndex = 4;
+            break;
+        default:
+            return; // Estado inválido
+    }
+
+    // Obter o índice da coluna correspondente ao símbolo atual
+    let columnIndex;
+    switch (tapeArray[index]) {
+        case '•':
+            columnIndex = 1;
+            break;
+        case 'a':
+            columnIndex = 2;
+            break;
+        case 'b':
+            columnIndex = 3;
+            break;
+        case 'X':
+            columnIndex = 4;
+            break;
+        case 'β':
+            columnIndex = 5;
+            break;
+        default:
+            return; // Símbolo inválido
+    }
+
+    const cell = document.getElementById(`${rowIndex}_${columnIndex}`);
+    if (cell) {
+        cell.style.backgroundColor = "rgb(87, 166, 161)";
+    }
+}
+
+function addRowOnStepTable(step, currentState, readSymbol, nextState, writtenSymbol, direction) {
+    const stepsTableBody = document.getElementById("steps-table-body");
+
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    const stepText = `${step || '-'}: ${currentState || '-'}, ${readSymbol || '-'} -> ${nextState || '-'}, ${writtenSymbol || '-'}, ${direction || '-'}`;
+    cell.textContent = stepText;
+
+    row.appendChild(cell);
+    stepsTableBody.appendChild(row);
+
+    row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function clearStepsTable() {
+    const stepsTableBody = document.getElementById("steps-table-body");
+
+    while (stepsTableBody.firstChild) {
+        stepsTableBody.removeChild(stepsTableBody.firstChild); // Remove cada linha uma a uma
+    }
+}
+
+function displayResultMessage(isAccepted, steps) {
+    const resultMessage = document.getElementById("result-message");
+
+    resultMessage.textContent = "";
+
+    const message = isAccepted
+        ? `Sentença aceita em ${steps} passos`
+        : `Sentença rejeitada em ${steps} passos`;
+
+    resultMessage.style.color = isAccepted ? "green" : "red";
+    resultMessage.textContent = message;
+    resultMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function clearResultMessage() {
+    const resultMessage = document.getElementById("result-message");
+
+    resultMessage.textContent = "";
+}
+
+async function analyzeSentence(tapeArray) {
+    let backState;
+    while (currentState !== 'q4' && currentState !== null) {
+        let currentSymbol = tapeArray[index];
+        let nextState, writtenSymbol, direction;
+
+        switch (currentState) {
             case 'q0':
-                if (simboloAtual === 'a') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q2', 'X', 'D', 2];
-                } else if (simboloAtual === 'b') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q1', 'X', 'D', 3];
-                } else if (simboloAtual === 'X') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q0', 'X', 'D', 4];
-                } else if (simboloAtual === 'β') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q4', 'β', 'D', 5];
+                if (currentSymbol === 'a') {
+                    [nextState, writtenSymbol, direction] = ['q2', 'X', 'D'];
+                } else if (currentSymbol === 'b') {
+                    [nextState, writtenSymbol, direction] = ['q1', 'X', 'D'];
+                } else if (currentSymbol === 'X') {
+                    [nextState, writtenSymbol, direction] = ['q0', 'X', 'D'];
+                } else if (currentSymbol === 'β') {
+                    [nextState, writtenSymbol, direction] = ['q4', 'β', 'D'];
                 } else {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q0', simboloAtual, 'D', 1];
+                    [nextState, writtenSymbol, direction] = ['q0', currentSymbol, 'D'];
                 }
                 break;
             case 'q1':
-                if (simboloAtual === 'a') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q3', 'X', 'E', 2];
-                } else if (simboloAtual === 'b') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q1', 'b', 'D', 3];
-                } else if (simboloAtual === 'X') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q1', 'X', 'D', 4];
+                if (currentSymbol === 'a') {
+                    [nextState, writtenSymbol, direction] = ['q3', 'X', 'E'];
+                } else if (currentSymbol === 'b') {
+                    [nextState, writtenSymbol, direction] = ['q1', 'b', 'D'];
+                } else if (currentSymbol === 'X') {
+                    [nextState, writtenSymbol, direction] = ['q1', 'X', 'D'];
                 } else {
-                    proximoEstado = null; // Sentença inválida
+                    nextState = null; // Invalid sentence
                 }
                 break;
             case 'q2':
-                if (simboloAtual === 'a') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q2', 'a', 'D', 2];
-                } else if (simboloAtual === 'b') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q3', 'X', 'E', 3];
-                } else if (simboloAtual === 'X') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q2', 'X', 'D', 4];
+                if (currentSymbol === 'a') {
+                    [nextState, writtenSymbol, direction] = ['q2', 'a', 'D'];
+                } else if (currentSymbol === 'b') {
+                    [nextState, writtenSymbol, direction] = ['q3', 'X', 'E'];
+                } else if (currentSymbol === 'X') {
+                    [nextState, writtenSymbol, direction] = ['q2', 'X', 'D'];
                 } else {
-                    proximoEstado = null; // Sentença inválida
+                    nextState = null; // Invalid sentence
                 }
                 break;
             case 'q3':
-                if (simboloAtual === 'a') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q3', 'a', 'E', 2];
-                } else if (simboloAtual === 'b') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q3', 'b', 'E', 3];
-                } else if (simboloAtual === 'X') {
-                    [proximoEstado, simboloEscrito, direcao, coluna] = ['q0', 'X', 'D', 4];
+                if (currentSymbol === 'a') {
+                    [nextState, writtenSymbol, direction] = ['q3', 'a', 'E'];
+                } else if (currentSymbol === 'b') {
+                    [nextState, writtenSymbol, direction] = ['q3', 'b', 'E'];
+                } else if (currentSymbol === 'X') {
+                    [nextState, writtenSymbol, direction] = ['q0', 'X', 'D'];
                 } else {
-                    proximoEstado = null; // Sentença inválida
+                    nextState = null; // Invalid sentence
                 }
                 break;
             default:
-                proximoEstado = null;
+                nextState = null;
         }
 
-        sentenceArray[index] = simboloEscrito;
-        atualizarFita(sentenceArray);
+        if (writtenSymbol) {
+            tapeArray[index] = writtenSymbol;
+        }
 
-        if (direcao === 'D') index++;
-        else if (direcao === 'E') index--;
+        if (direction) {
+            index += (direction === 'D') ? 1 : -1;
+        }
+        steps++;
 
-        estadoAtual = proximoEstado;
-        passos++;
+        backState = currentState;
+        currentState = nextState;
+        highlightStepStateOnTable(tapeArray);
+        addRowOnTape(tapeArray, index);
+        addRowOnStepTable(steps, currentState ? currentState : backState, currentSymbol, nextState, writtenSymbol, direction);
 
-        if (estadoAtual === 'q4') {
-            alert(`Sentença aceita! Passos: ${passos}`);
+
+        if (currentState === 'q4') {
+            displayResultMessage(true, steps);
             return;
         }
 
-        if (estadoAtual === null) {
-            alert(`Sentença rejeitada. Passos: ${passos}`);
+        if (currentState === null) {
+            displayResultMessage(false, steps);
             return;
         }
-        
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Adiciona delay de 1 segundo
+
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Adds 1 second delay
     }
 }
