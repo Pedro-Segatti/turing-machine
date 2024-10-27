@@ -72,7 +72,7 @@ function addRowOnTape(tapeArray, index) {
 
 // Marca o estado que está sendo lido da tabela, destacando em verde
 function highlightStepStateOnTable(tapeArray) {
-    const tableCells = document.querySelectorAll("td");
+    const tableCells = document.querySelectorAll("#sentence-table td");
     tableCells.forEach(cell => {
         if (cell.style.backgroundColor === "rgb(87, 166, 161)") {
             cell.style.backgroundColor = "";
@@ -177,6 +177,10 @@ function clearResultMessage() {
 // Analisa as sentenças de fato
 async function analyzeSentence(tapeArray) {
     let backState;
+    if (!index || index === 0) {
+        addRowOnTape(tapeArray, 0);
+    }
+
     while (currentState !== 'q4' && currentState !== null) {
         let currentSymbol = tapeArray[index];
         let nextState, writtenSymbol, direction;
